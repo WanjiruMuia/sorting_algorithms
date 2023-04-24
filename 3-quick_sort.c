@@ -2,43 +2,80 @@
 #include <stdlib.h>
 #include "sort.h"
 
-void quick_sort(int *array, size_t size) {
-    if (size < 2) {
-        return;
-    }
+/**
+*swap - the positions of two elements into an array
+*@array: array
+*@item1: array element
+*@item2: array element
+*/
+void swap(int *array, ssize_t item1, ssize_t item2)
+{
+	int tmp;
 
-    int pivot = array[size - 1];
-    size_t i = 0;
+	tmp = array[item1];
+	array[item1] = array[item2];
+	array[item2] = tmp;
+}
+/**
+ *lomuto_partition - lomuto partition sorting scheme implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: size array
+ *Return: return the position of the last element sorted
+ */
+int lomuto_partition(int *array, ssize_t first, ssize_t last, size_t size)
+{
+	int pivot = array[last];
+	ssize_t current = first, finder;
 
-    for (size_t j = 0; j < size - 1; j++) {
-        if (array[j] < pivot) {
-            if (i != j) {
-                int temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
-                /* Print the array after each swap */
-                printf("Swap %d <-> %d: ", array[i], array[j]);
-                for (int k = 0; k < size; k++) {
-                    printf("%d ", array[k]);
-                }
-                printf("\n");
-            }
-            i++;
-        }
-    }
+	for (finder = first; finder < last; finder++)
+	{
+		if (array[finder] < pivot)
+		{
+			if (array[current] != array[finder])
+			{
+				swap(array, current, finder);
+				print_array(array, size);
+			}
+			current++;
+		}
+	}
+	if (array[current] != array[last])
+	{
+		swap(array, current, last);
+		print_array(array, size);
+	}
+	return (current);
+}
+/**
+ *qs - qucksort algorithm implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: array size
+ */
+void qs(int *array, ssize_t first, ssize_t last, int size)
+{
+	ssize_t position = 0;
 
-    if (i != size - 1) {
-        int temp = array[i];
-        array[i] = array[size - 1];
-        array[size - 1] = temp;
-        /* Print the array after each swap */
-        printf("Swap %d <-> %d: ", array[i], array[size - 1]);
-        for (int k = 0; k < size; k++) {
-            printf("%d ", array[k]);
-        }
-        printf("\n");
-    }
 
-    quick_sort(array, i);
-    quick_sort(&array[i + 1], size - i - 1);
+	if (first < last)
+	{
+		position = lomuto_partition(array, first, last, size);
+
+		qs(array, first, position - 1, size);
+		qs(array, position + 1, last, size);
+	}
+}
+/**
+ *quick_sort - prepare the terrain to quicksort algorithm
+ *@array: array
+ *@size: array size
+ */
+void quick_sort(int *array, size_t size)
+{
+	if (!array || size < 2)
+		return;
+	qs(array, 0, size - 1, size);
 }
